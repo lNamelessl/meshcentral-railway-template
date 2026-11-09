@@ -124,4 +124,6 @@ else
 fi
 
 # --- 5. Hand off to the official entrypoint (starts MeshCentral) ---------------
-exec /opt/meshcentral/entrypoint.sh
+# NOTE: upstream ships entrypoint.sh WITHOUT the executable bit - the image's
+# own ENTRYPOINT invokes it as `bash <path>`. exec it through bash the same way.
+exec /bin/bash /opt/meshcentral/entrypoint.sh
