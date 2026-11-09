@@ -22,6 +22,18 @@
 # matches Railway's root-owned volume mounts - no chown dance needed.
 FROM docker.io/meshcentral/meshcentral:1.3.1-mongodb-debian@sha256:8d0464c98882c8b78bac0e6ff7ecbc90913c8a807582d6b81842383807bd8a37
 
+# Fixed runtime behavior baked as image ENV (NOT template service variables:
+# literal service variables would surface as required deploy-form prompts).
+# The wrapper hardcodes the same values into config.json; these ENVs keep the
+# image self-sufficient and consistent with the upstream env contract.
+# SESSION_KEY / ADMIN_PASSWORD / MONGO_URL / HOSTNAME / REVERSE_PROXY stay
+# service variables with expression defaults (${{...}}) - per-deploy values.
+ENV USE_MONGODB=true \
+    TLS_OFFLOAD=true \
+    TRUSTED_PROXY=true \
+    REVERSE_PROXY_TLS_PORT=443 \
+    REDIR_PORT=0
+
 COPY railway-entrypoint.sh /railway-entrypoint.sh
 RUN chmod +x /railway-entrypoint.sh \
     && command -v bash >/dev/null \
